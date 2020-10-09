@@ -87,7 +87,7 @@ def set_gpu(compute, project, zone, instance, gpu):
 def set_ssh_config(compute, project, zone, instance):
     ip = instance_ip(compute, project, zone, instance)
     if ip == None:
-        raise Exception(f"{instance} does not have an IP. Does it running?")
+        raise Exception(f"{instance} does not have an IP. Is it running?")
     h = (
         f"Host {instance}\n"
         f"  HostName {ip}\n"
@@ -116,7 +116,7 @@ def set_ssh_config(compute, project, zone, instance):
 
     with open(conf_path, "w") as f:
         f.write(ssh_config)
-    print(f"Host {instance} being added to .ssh/config")
+    print(f"Host {instance} has been added to .ssh/config")
 
 
 if __name__ == '__main__':
