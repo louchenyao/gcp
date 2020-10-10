@@ -31,8 +31,8 @@ def list_instances(compute, project, zone):
                     s += f", {x['natIP']}"
         print(s)
 
-def wait_for_operation(compute, project, zone, operation):
-    print('Waiting for operation to finish...')
+def wait_for_operation(compute, project, zone, operation, msg="Waiting for operation to finish..."):
+    print(msg, end=" ", flush=True)
     while True:
         result = compute.zoneOperations().get(
             project=project,
@@ -52,14 +52,15 @@ def start_instance(compute, project, zone, instance):
         project=project,
         zone=zone,
         instance=instance).execute()
-    wait_for_operation(compute, project, zone, op['name'])
+    wait_for_operation(compute, project, zone, op['name'], "Starting...")
+    set_ssh_config(compute, project, zone, instance)
 
 def stop_instance(compute, project, zone, instance):
     op = compute.instances().stop(
         project=project,
         zone=zone,
         instance=instance).execute()
-    wait_for_operation(compute, project, zone, op['name'])
+    wait_for_operation(compute, project, zone, op['name'], "Stopping...")
 
 def set_gpu(compute, project, zone, instance, gpu):
     gpu_to_fullname = {
@@ -77,12 +78,21 @@ def set_gpu(compute, project, zone, instance, gpu):
     if gpu == None:
         body = {"guestAccelerators": []}
 
+    # stop instance if it is not terminated
+    r = compute.instances().get(project=project, zone=zone, instance=instance).execute()
+    if r["status"] != "TERMINATED":
+        ans = input("Changing the GPU type needs to stop the instance. Continue? (Y/n)")
+        if "n" in ans.lower():
+            print("Nothing has changed!")
+            os.exit(-1)
+        stop_instance(compute, project, zone, instance)
+
     op = compute.instances().setMachineResources(
         project=project,
         zone=zone,
         instance=instance,
         body=body).execute()
-    wait_for_operation(compute, project, zone, op['name'])
+    wait_for_operation(compute, project, zone, op['name'], "Changing the GPU type...")
 
 def set_ssh_config(compute, project, zone, instance):
     ip = instance_ip(compute, project, zone, instance)
