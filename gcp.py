@@ -32,7 +32,9 @@ def list_instances(compute, project, zone):
         print(s)
 
 def wait_for_operation(compute, project, zone, operation, msg="Waiting for operation to finish..."):
-    print(msg, end=" ", flush=True)
+    print(msg, end="", flush=True)
+    animation = "|/-\\"
+    idx = 0
     while True:
         result = compute.zoneOperations().get(
             project=project,
@@ -40,12 +42,15 @@ def wait_for_operation(compute, project, zone, operation, msg="Waiting for opera
             operation=operation).execute()
 
         if result['status'] == 'DONE':
-            print("done.")
+            print("\r" + msg + " done.")
             if 'error' in result:
                 raise Exception(result['error'])
             return result
+        else:
+            print("\r" + msg + " " + animation[idx], end="", flush=True)
+            idx = (idx + 1) % len(animation)
 
-        time.sleep(1)
+        time.sleep(0.5)
 
 def start_instance(compute, project, zone, instance):
     op = compute.instances().start(
