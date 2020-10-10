@@ -104,6 +104,7 @@ def set_ssh_config(compute, project, zone, instance):
         "  ForwardAgent yes\n"
         "  AddKeysToAgent yes\n"
         "  CheckHostIP no\n"
+        "  HostKeyAlias gcp.{instance}\n"
     )
 
     # delete the old conf
@@ -143,6 +144,9 @@ if __name__ == '__main__':
     # stop parser
     stop = subparsers.add_parser('stop')
     stop.add_argument('instance')
+    # restart parser
+    restart = subparsers.add_parser('restart')
+    restart.add_argument('instance')
     # ssh parser
     ssh = subparsers.add_parser('ssh')
     ssh.add_argument('instance')
@@ -164,6 +168,9 @@ if __name__ == '__main__':
         start_instance(compute, args.project_id, args.zone, args.instance)
     elif args.subcommand == 'stop':
         stop_instance(compute, args.project_id, args.zone, args.instance)
+    elif args.subcommand == 'restart':
+        stop_instance(compute, args.project_id, args.zone, args.instance)
+        start_instance(compute, args.project_id, args.zone, args.instance)
     elif args.subcommand == 'ssh':
         set_ssh_config(compute, args.project_id, args.zone, args.instance)
     elif args.subcommand == 'gpu':
