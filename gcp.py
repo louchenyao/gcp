@@ -104,7 +104,7 @@ def set_ssh_config(compute, project, zone, instance):
         "  ForwardAgent yes\n"
         "  AddKeysToAgent yes\n"
         "  CheckHostIP no\n"
-        "  HostKeyAlias gcp.{instance}\n"
+        f"  HostKeyAlias gcp.{instance}\n"
     )
 
     # delete the old conf
