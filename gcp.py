@@ -71,6 +71,7 @@ def set_gpu(compute, project, zone, instance, gpu):
     gpu_to_fullname = {
         "v100": "nvidia-tesla-v100",
         "t4": "nvidia-tesla-t4",
+        "p100": "nvidia-tesla-p100",
         "none": None,
     }
     gpu = gpu_to_fullname[gpu.lower()]
@@ -158,7 +159,7 @@ if __name__ == '__main__':
     # gpu parser
     gpu_parser = subparsers.add_parser('gpu')
     gpu_parser.add_argument('instance')
-    gpu_parser.add_argument('gpu', choices=['v100', 't4', 'none'])
+    gpu_parser.add_argument('gpu', choices=['v100', 't4', 'p100', 'none'])
 
     args = parser.parse_args()
 
